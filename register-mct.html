@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:40px}
+    form{max-width:420px;margin:auto;display:flex;flex-direction:column;gap:10px}
+    input,button{padding:10px;font-size:16px}
+    #status{margin-top:12px}
+  </style>
+</head>
+<body>
+  <h2>Register Your Email</h2>
+
+  <form id="signupForm">
+    <input id="email" type="email" placeholder="you@example.com" required />
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) return document.getElementById('status').innerText = 'Enter an email';
+
+      document.getElementById('status').innerText = 'Submitting...';
+      try {
+        const res = await fetch('/api/subscribe', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email })
+        });
+        const json = await res.json();
+        document.getElementById('status').innerText = json.message || (res.ok ? 'Success' : 'Error');
+      } catch(err){
+        console.error(err);
+        document.getElementById('status').innerText = 'Network error';
+      }
+    });
+  </script>
+</body>
+</html>
