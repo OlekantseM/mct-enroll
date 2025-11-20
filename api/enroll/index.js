@@ -7,18 +7,14 @@ module.exports = async function (context, req) {
     return;
   }
 
-  // Use the connection string from Azure Static Web App configuration
-  const connectionString = process.env.DB_CONNECTION_STRING;
+  const config = process.env.DB_CONNECTION_STRING; // read connection string
 
   try {
-    await sql.connect(connectionString);
-
-    // Prevent duplicates
+    await sql.connect(config);
     await sql.query`IF NOT EXISTS (SELECT 1 FROM users WHERE email = ${email})
                     BEGIN
                       INSERT INTO users (email) VALUES (${email})
                     END`;
-
     context.res = { status: 200, body: { message: 'Email saved!' } };
   } catch (err) {
     context.log.error(err);
